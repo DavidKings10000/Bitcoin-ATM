@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "dev": "concurrently \"npm --prefix atm-layer2/server run dev\" \"npm --prefix atm-layer2/hardware-simulator run dev\" \"npm --prefix atm-layer2/client run dev -- --host 0.0.0.0\"",
+    "server": "npm --prefix atm-layer2/server run dev",
+    "simulator": "npm --prefix atm-layer2/hardware-simulator run dev",
+    "client": "npm --prefix atm-layer2/client run dev -- --host 0.0.0.0"
+  },
+  "dependencies": {
+    "react-router-dom": "^7.18.2"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

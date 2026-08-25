@@ -1,0 +1,19 @@
+{
+  "name": "hardware-simulator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "simulator.js",
+  "scripts": {
+    "dev": "node simulator.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.1"
+  }
+}
