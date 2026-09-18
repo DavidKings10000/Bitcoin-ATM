@@ -4,7 +4,7 @@ import { useTransaction } from "../context/TransactionContext";
 
 function Transaction() {
   const navigate = useNavigate();
-  const { updateTransaction, addTransactionLog } = useTransaction();
+  const { transaction, updateTransaction, addTransactionLog } = useTransaction();
 
   const selectTransaction = (type) => {
     const isBuy = type === "BUY";
@@ -44,9 +44,37 @@ function Transaction() {
             <p>Withdraw cash from your BTC wallet</p>
           </button>
 
-          <button type="button" className="redeem-code-button">
-            Redeem Code
-          </button>
+          <section className="transaction-code-section" aria-labelledby="promo-code-heading">
+            <div>
+              <strong id="promo-code-heading">PROMO CODE</strong>
+              <span>Apply a promotional offer to your transaction.</span>
+            </div>
+            <input
+              className="kiosk-input"
+              type="text"
+              value={transaction.promoCode}
+              onChange={(event) => updateTransaction({ promoCode: event.target.value.toUpperCase() })}
+              placeholder="ENTER PROMO CODE"
+              aria-label="Promo code"
+              autoComplete="off"
+            />
+          </section>
+
+          <section className="transaction-code-section" aria-labelledby="voucher-heading">
+            <div>
+              <strong id="voucher-heading">REDEEM VOUCHER</strong>
+              <span>Use a voucher code for your cash purchase.</span>
+            </div>
+            <input
+              className="kiosk-input"
+              type="text"
+              value={transaction.voucherCode}
+              onChange={(event) => updateTransaction({ voucherCode: event.target.value.toUpperCase() })}
+              placeholder="ENTER VOUCHER CODE"
+              aria-label="Redeem voucher code"
+              autoComplete="off"
+            />
+          </section>
         </main>
 
         <footer className="kiosk-footer">

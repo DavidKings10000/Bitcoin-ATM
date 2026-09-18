@@ -46,7 +46,7 @@ function Welcome() {
           <div className="topbar-btc">₿</div>
           <div className="topbar-price">
             <span>BTC:</span>
-            <strong>$64,200</strong>
+            <strong>KSh 10,456,732</strong>
           </div>
           <button type="button" className="topbar-language">
             English <span aria-hidden="true">🌐</span>
@@ -60,7 +60,7 @@ function Welcome() {
             </div>
           </div>
 
-          <h1>Sovereign Kiosk</h1>
+          <h1><i className="fas fa-coins">BANKLESS BITCOIN ATM</i></h1>
           <p>Tap to begin your secure transaction.</p>
 
           <button type="button" className="welcome-start-button" onClick={handleStart}>

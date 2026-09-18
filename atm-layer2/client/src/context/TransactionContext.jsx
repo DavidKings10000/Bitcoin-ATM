@@ -5,6 +5,8 @@ const TransactionContext = createContext(null);
 const DEFAULT_TRANSACTION = {
   type: "BUY",
   walletAddress: "",
+  promoCode: "",
+  voucherCode: "",
   amount: "",
   status: "IDLE",
   cashInserted: 0,
