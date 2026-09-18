@@ -41,16 +41,16 @@ socket.on("connect", () => {
 
   emitHardwareEvent("DEVICE_CONNECTED", { device: "NV200", status: "connected" });
 
-  const noteSequence = [5, 10, 20, 50, 100];
+  const noteSequence = [500, 1000];
 
   noteSequence.forEach((value, index) => {
     setTimeout(() => {
-      emitHardwareEvent("NOTE_DETECTED", { value, currency: "USD" });
-      emitHardwareEvent("NOTE_ACCEPTED", { value, currency: "USD" });
+      emitHardwareEvent("NOTE_DETECTED", { value, currency: "KES" });
+      emitHardwareEvent("NOTE_ACCEPTED", { value, currency: "KES" });
       hardwareState.status = "accepting";
       hardwareState.cashInserted = value;
       if (index === noteSequence.length - 1) {
-        emitHardwareEvent("NOTE_STACKED", { value, currency: "USD" });
+        emitHardwareEvent("NOTE_STACKED", { value, currency: "KES" });
       }
     }, 1200 + index * 1500);
   });
@@ -67,8 +67,12 @@ socket.on("disconnect", () => {
 app.get("/api/status", (req, res) => {
   const response = {
     device: "NV200",
+    model: "NV200",
+    protocol: "SSP / eSSP",
+    capabilities: ["cash-in", "cash-out", "note-validation"],
     connection: hardwareState.connected ? "connected" : "disconnected",
     enabled: hardwareState.enabled,
+    ready: hardwareState.connected && hardwareState.enabled,
     status: hardwareState.status,
     cashInserted: hardwareState.cashInserted,
     lastCommand: hardwareState.lastCommand,
@@ -111,10 +115,10 @@ app.post("/api/accept", (req, res) => {
 
   hardwareState.status = "accepting";
   hardwareState.lastCommand = "accept";
-  const noteValue = [5, 10, 20, 50, 100][Math.floor(Math.random() * 5)];
+  const noteValue = [500, 1000][Math.floor(Math.random() * 2)];
 
-  emitHardwareEvent("NOTE_DETECTED", { value: noteValue, currency: "USD" });
-  emitHardwareEvent("NOTE_ACCEPTED", { value: noteValue, currency: "USD" });
+  emitHardwareEvent("NOTE_DETECTED", { value: noteValue, currency: "KES" });
+  emitHardwareEvent("NOTE_ACCEPTED", { value: noteValue, currency: "KES" });
 
   res.json({
     success: true,

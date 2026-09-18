@@ -5,6 +5,7 @@ const { Server } = require("socket.io");
 require("dotenv").config();
 
 const hardwareService = require("./services/hardwareService");
+const { createHardwareManager } = require("./services/hardwareManager");
 const { getBtcPrice, createQuote, settleTransaction } = require("./services/cloudBridge");
 
 const app = express();
@@ -21,9 +22,9 @@ const atmState = {
   layer: "Layer 2",
   status: "READY",
   hardware: {
-    connection: "connected",
-    enabled: true,
-    status: "idle",
+    connection: "disconnected",
+    enabled: false,
+    status: "discovering",
     cashInserted: 0,
   },
   transaction: {
@@ -129,16 +130,40 @@ const emitHardwareEvent = (event) => {
   const payload = recordHardwareEvent(event);
 
   applyHardwareEvent(payload);
+  hardwareManager.handleHardwareEvent(payload);
 
   io.emit("hardware:event", payload);
-  io.emit("hardware:status", {
-    connection: atmState.hardware.connection,
-    enabled: atmState.hardware.enabled,
-    status: atmState.hardware.status,
-    cashInserted: atmState.hardware.cashInserted,
-  });
+  emitHardwareStatus();
   emitTransactionState();
 };
+
+const emitHardwareStatus = () => {
+  io.emit("hardware:status", {
+    ...atmState.hardware,
+    lifecycle: hardwareManager.getState(),
+  });
+};
+
+const hardwareManager = createHardwareManager({
+  onStateChange: (lifecycle) => {
+    atmState.hardware = {
+      ...atmState.hardware,
+      connection: lifecycle.connection,
+      enabled: lifecycle.enabled,
+      lifecycleState: lifecycle.state,
+      device: lifecycle.device,
+      endpoint: lifecycle.endpoint,
+      port: lifecycle.port,
+      ready: lifecycle.ready,
+      lastSeen: lifecycle.lastSeen,
+      lastError: lifecycle.lastError,
+    };
+    emitHardwareStatus();
+  },
+  onEvent: (event) => {
+    emitHardwareEvent(event);
+  },
+});
 
 io.on("connection", (socket) => {
   socket.emit("hardware:stream", hardwareEventLog);
@@ -384,11 +409,17 @@ app.get("/api/hardware/status", async (req, res) => {
     res.json({
       layer: "Layer 2",
       hardware: status,
+      lifecycle: hardwareManager.getState(),
     });
   } catch (error) {
     res.status(503).json({
       layer: "Layer 2",
-      hardware: "unavailable",
+      hardware: {
+        ...atmState.hardware,
+        connection: "disconnected",
+        ready: false,
+      },
+      lifecycle: hardwareManager.getState(),
       error: error.message,
     });
   }
@@ -441,10 +472,8 @@ app.post("/api/hardware/accept", async (req, res) => {
 
 io.on("connection", (socket) => {
   socket.emit("hardware:status", {
-    connection: atmState.hardware.connection,
-    enabled: atmState.hardware.enabled,
-    status: atmState.hardware.status,
-    cashInserted: atmState.hardware.cashInserted,
+    ...atmState.hardware,
+    lifecycle: hardwareManager.getState(),
   });
 
   socket.on("hardware:register", (payload = {}) => {
@@ -476,4 +505,5 @@ io.on("connection", (socket) => {
 
 server.listen(PORT, () => {
   console.log(`Layer 2 server running on http://localhost:${PORT}`);
+  hardwareManager.start();
 });
