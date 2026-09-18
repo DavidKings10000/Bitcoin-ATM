@@ -13,6 +13,8 @@ let hardwareState = {
   enabled: true,
   status: "idle",
   cashInserted: 0,
+  cashboxNotes: 0,
+  payoutNotes: 0,
   lastCommand: null,
 };
 
@@ -49,6 +51,7 @@ socket.on("connect", () => {
       emitHardwareEvent("NOTE_ACCEPTED", { value, currency: "KES" });
       hardwareState.status = "accepting";
       hardwareState.cashInserted = value;
+      hardwareState.cashboxNotes += 1;
       if (index === noteSequence.length - 1) {
         emitHardwareEvent("NOTE_STACKED", { value, currency: "KES" });
       }
@@ -68,13 +71,19 @@ app.get("/api/status", (req, res) => {
   const response = {
     device: "NV200",
     model: "NV200",
-    protocol: "SSP / eSSP",
-    capabilities: ["cash-in", "cash-out", "note-validation"],
+    protocol: "ITL SSP / eSSP sidecar",
+    transport: "http-sidecar",
+    components: ["NV200 validator", "cashbox", "SMART Payout"],
+    capabilities: ["cash-in", "cash-out", "note-validation", "smart-payout"],
     connection: hardwareState.connected ? "connected" : "disconnected",
     enabled: hardwareState.enabled,
     ready: hardwareState.connected && hardwareState.enabled,
     status: hardwareState.status,
     cashInserted: hardwareState.cashInserted,
+    cashboxNotes: hardwareState.cashboxNotes,
+    payoutNotes: hardwareState.payoutNotes,
+    payoutCapacity: 70,
+    payoutDenominations: [500, 1000],
     lastCommand: hardwareState.lastCommand,
   };
 
@@ -127,12 +136,48 @@ app.post("/api/accept", (req, res) => {
   });
 });
 
+app.post("/api/payout", (req, res) => {
+  if (!hardwareState.enabled) {
+    return res.status(400).json({ success: false, message: "SMART Payout is disabled" });
+  }
+
+  const amount = Number(req.body?.amount || 0);
+  const currency = req.body?.currency || "KES";
+  const denominations = [500, 1000];
+
+  if (!Number.isInteger(amount) || amount < 500 || amount % 500 !== 0) {
+    return res.status(400).json({ success: false, message: "SMART Payout accepts whole KES amounts in 500 KES increments" });
+  }
+
+  const noteCount = Math.ceil(amount / 1000);
+  if (noteCount > 70) {
+    return res.status(400).json({ success: false, message: "Payout exceeds SMART Payout capacity" });
+  }
+
+  hardwareState.status = "payout";
+  hardwareState.lastCommand = "payout";
+  hardwareState.payoutNotes += noteCount;
+  emitHardwareEvent("PAYOUT_STARTED", { amount, currency, denominations });
+  emitHardwareEvent("PAYOUT_COMPLETED", { amount, currency, noteCount, denominations });
+
+  res.json({
+    success: true,
+    message: "SMART Payout dispensed notes",
+    amount,
+    currency,
+    noteCount,
+    denominations,
+  });
+});
+
 app.post("/api/reset", (req, res) => {
   hardwareState = {
     connected: true,
     enabled: true,
     status: "idle",
     cashInserted: 0,
+    cashboxNotes: 0,
+    payoutNotes: 0,
     lastCommand: "reset",
   };
 

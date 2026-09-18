@@ -155,6 +155,10 @@ const hardwareManager = createHardwareManager({
       endpoint: lifecycle.endpoint,
       port: lifecycle.port,
       ready: lifecycle.ready,
+      transport: lifecycle.transport,
+      components: lifecycle.components,
+      payoutCapacity: lifecycle.payoutCapacity,
+      payoutDenominations: lifecycle.payoutDenominations,
       lastSeen: lifecycle.lastSeen,
       lastError: lifecycle.lastError,
     };
@@ -458,6 +462,28 @@ app.post("/api/hardware/disable", async (req, res) => {
 app.post("/api/hardware/accept", async (req, res) => {
   try {
     const result = await hardwareService.acceptCash();
+
+    res.json({
+      layer: "Layer 2",
+      hardware: result,
+    });
+  } catch (error) {
+    res.status(503).json({
+      error: error.message,
+    });
+  }
+});
+
+app.post("/api/hardware/payout", async (req, res) => {
+  try {
+    const amount = Number(req.body?.amount || 0);
+    const currency = req.body?.currency || "KES";
+
+    if (!Number.isInteger(amount) || amount <= 0) {
+      return res.status(400).json({ error: "Payout amount must be a positive whole currency amount" });
+    }
+
+    const result = await hardwareService.payoutCash({ amount, currency });
 
     res.json({
       layer: "Layer 2",
