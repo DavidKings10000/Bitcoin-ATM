@@ -25,6 +25,10 @@ function Bitcoin() {
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
   const animationRef = useRef(null);
+  const externalScanBufferRef = useRef("");
+  const externalScanStartedAtRef = useRef(0);
+  const externalScanLastKeyAtRef = useRef(0);
+  const externalScanTimerRef = useRef(null);
 
   const stopCamera = () => {
     if (animationRef.current) {
@@ -54,19 +58,64 @@ function Bitcoin() {
   const handleScanResult = (walletAddress) => {
     const cleanAddress = walletAddress.trim();
     if (!cleanAddress || !isValidBitcoinAddress(cleanAddress)) {
-      setWalletError("The scanned QR code did not contain a valid Bitcoin wallet address.");
+      setWalletError("The scanned code did not contain a valid Bitcoin wallet address.");
       return;
     }
     updateTransaction({ walletAddress: cleanAddress, status: "AWAITING_CASH" });
     addTransactionLog({
       type: "WALLET",
-      message: "Wallet address captured from QR scan.",
+      message: "Wallet address captured from scanner.",
       details: cleanAddress,
     });
     stopCamera();
-    setScanError("QR code scanned successfully.");
+    setScanError("Wallet code scanned successfully.");
     setWalletError("");
   };
+
+  useEffect(() => {
+    const resetExternalScan = () => {
+      externalScanBufferRef.current = "";
+      externalScanStartedAtRef.current = 0;
+      externalScanLastKeyAtRef.current = 0;
+    };
+
+    const handleExternalScannerKeyDown = (event) => {
+      const now = performance.now();
+      const buffer = externalScanBufferRef.current;
+      const elapsedSinceStart = externalScanStartedAtRef.current ? now - externalScanStartedAtRef.current : 0;
+
+      if (event.key === "Enter") {
+        if (buffer.length >= 20 && elapsedSinceStart <= 1500) {
+          event.preventDefault();
+          handleScanResult(buffer);
+          setScanError("External 2D scanner code received.");
+        }
+        resetExternalScan();
+        return;
+      }
+
+      if (event.key.length !== 1 || event.ctrlKey || event.altKey || event.metaKey) {
+        return;
+      }
+
+      if (!externalScanStartedAtRef.current || now - externalScanLastKeyAtRef.current > 250) {
+        externalScanBufferRef.current = event.key;
+        externalScanStartedAtRef.current = now;
+      } else {
+        externalScanBufferRef.current += event.key;
+      }
+      externalScanLastKeyAtRef.current = now;
+
+      window.clearTimeout(externalScanTimerRef.current);
+      externalScanTimerRef.current = window.setTimeout(resetExternalScan, 1600);
+    };
+
+    window.addEventListener("keydown", handleExternalScannerKeyDown, true);
+    return () => {
+      window.removeEventListener("keydown", handleExternalScannerKeyDown, true);
+      window.clearTimeout(externalScanTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (!isScanning) {
@@ -120,7 +169,7 @@ function Bitcoin() {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
       }
-    } catch (error) {
+    } catch {
       setIsScanning(false);
       setScanError("Unable to access camera. Enter wallet manually.");
     }
@@ -157,7 +206,7 @@ function Bitcoin() {
           </div>
 
           <h1>Select Destination</h1>
-          <p>Scan your wallet QR code or enter your address manually.</p>
+          <p>Use the camera QR scanner, an external 2D scanner, or enter your address manually.</p>
 
           <button type="button" className="scanner-tile" onClick={isScanning ? stopCamera : startScanner}>
             <div className="scanner-frame alt">
@@ -168,7 +217,7 @@ function Bitcoin() {
               )}
               <div className="scanner-overlay alt" aria-hidden="true" />
             </div>
-            <strong>{isScanning ? "Tap to stop scanner" : "Hold QR Code to Scanner"}</strong>
+            <strong>{isScanning ? "Tap to stop camera scanner" : "Scan with camera QR reader"}</strong>
           </button>
 
           <canvas ref={canvasRef} className="scanner-canvas" />
@@ -181,6 +230,7 @@ function Bitcoin() {
             aria-invalid={Boolean(walletError)}
             className="kiosk-input"
           />
+          <small className="scan-status">External 2D scanner ready</small>
           {scanError ? <p className="kiosk-message ok">{scanError}</p> : null}
           {walletError ? <p className="kiosk-message error">{walletError}</p> : null}
 
