@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 
+import HALDashboard from "./components/HALDashboard";
 import HardwareEventStream from "./components/HardwareEventStream";
 import TransactionStatusPanel from "./components/TransactionStatusPanel";
 import { TransactionProvider } from "./context/TransactionContext";
@@ -46,6 +47,7 @@ function AppLayout() {
           <Route path="/admin-login" element={<OperatorLogin targetRoute="/admin" />} />
           <Route path="/maintenance-login" element={<OperatorLogin targetRoute="/maintenance" />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/hal" element={<HALDashboard />} />
           <Route path="/maintenance" element={<Maintenance />} />
         </Routes>
       </div>

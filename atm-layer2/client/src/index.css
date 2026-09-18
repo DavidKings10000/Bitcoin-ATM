@@ -81,7 +81,7 @@ input {
 
 .atm-container {
   width: 100%;
-  max-width: 620px;
+  max-width: 920px;
   min-height: 520px;
   padding: 36px 32px;
   text-align: center;
@@ -259,6 +259,311 @@ input {
   color: #f8fafc;
 }
 
+.hal-dashboard-shell {
+  width: min(1600px, 100%);
+  max-width: 1600px;
+  padding: 32px 28px 24px;
+  border-radius: 24px;
+  background: rgba(15, 23, 42, 0.9);
+  color: #e2e8f0;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.35);
+}
+
+.hal-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.hal-header-row h1 {
+  margin: 0;
+  font-size: clamp(2.1rem, 2.2vw, 3rem);
+  color: #f8fafc;
+}
+
+.hal-summary-badge {
+  background: rgba(34, 197, 94, 0.15);
+  color: #a7f3d0;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-weight: 700;
+}
+
+.hal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+.device-card {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 18px;
+  padding: 18px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 290px;
+}
+
+.device-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.device-topline h2 {
+  margin: 0;
+  font-size: 1.28rem;
+}
+
+.device-eyebrow {
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #94a3b8;
+}
+
+.status-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  background: #ef4444;
+  box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.12);
+}
+
+.status-dot.ready,
+.status-dot.connected {
+  background: #22c55e;
+  box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.12);
+}
+
+.status-dot.connecting,
+.status-dot.discovering {
+  background: #f59e0b;
+  box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.12);
+}
+
+.device-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+}
+
+.device-status-row strong {
+  color: #f8fafc;
+  font-size: 1rem;
+}
+
+.device-metadata {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.device-metadata li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #cbd5e1;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  padding-bottom: 6px;
+}
+
+.device-metadata li strong {
+  color: #f8fafc;
+}
+
+.device-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.device-actions button,
+.log-header button {
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  color: white;
+  padding: 10px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.device-actions button:hover,
+.log-header button:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.device-actions .secondary,
+.log-header .secondary {
+  background: rgba(148, 163, 184, 0.14);
+  color: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.preview-wrap {
+  min-height: 152px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  display: grid;
+  place-items: center;
+}
+
+.camera-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.preview-placeholder {
+  color: #94a3b8;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+.qr-history {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 32px;
+  color: #cbd5e1;
+}
+
+.qr-history code {
+  background: rgba(148, 163, 184, 0.12);
+  border-radius: 8px;
+  padding: 6px 8px;
+  color: #f8fafc;
+  font-size: 0.7rem;
+  overflow-wrap: anywhere;
+}
+
+.touch-tile {
+  min-height: 100px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.1), rgba(148, 163, 184, 0.1));
+  display: grid;
+  place-items: center;
+  color: #f8fafc;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.touch-tile.flash {
+  transform: scale(0.98);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.42);
+}
+
+.device-warning {
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+  border: 1px solid rgba(239, 68, 68, 0.28);
+}
+
+.log-panel {
+  margin-top: 24px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+@media (min-width: 1200px) {
+  .hal-dashboard-shell {
+    padding-left: 36px;
+    padding-right: 36px;
+  }
+
+  .hal-grid {
+    grid-template-columns: repeat(5, minmax(230px, 1fr));
+  }
+
+  .device-card {
+    min-height: 320px;
+  }
+
+  .log-panel ul {
+    max-height: 340px;
+  }
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.log-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.log-panel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 280px;
+  overflow: auto;
+}
+
+.log-entry {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: start;
+  border-radius: 10px;
+  background: rgba(148, 163, 184, 0.08);
+  padding: 10px 12px;
+}
+
+.log-entry span {
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+.log-entry strong {
+  color: #e2e8f0;
+  word-break: break-word;
+}
+
+.log-entry small {
+  color: #94a3b8;
+}
+
+.log-entry.warn {
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.log-entry.warn strong {
+  color: #fcd34d;
+}
+
 .hardware-panel span {
   font-size: 0.75rem;
   color: #cbd5e1;
@@ -356,7 +661,7 @@ input {
 
 .admin-dashboard,
 .maintenance-panel {
-  width: min(960px, 100%);
+  width: min(1240px, 100%);
   background: #f8fafc;
   border-radius: 22px;
   padding: 28px;
@@ -532,7 +837,7 @@ input {
 }
 
 .operator-login-panel {
-  width: min(460px, 100%);
+  width: min(660px, 100%);
   background: #f8fafc;
   border-radius: 22px;
   padding: 28px;
@@ -592,7 +897,7 @@ input {
 }
 
 .kiosk-frame {
-  width: min(100%, 360px);
+  width: min(100%, 620px);
   height: min(100vh - 12px, 760px);
   border: 1px solid #545454;
   border-radius: 12px;
@@ -1205,7 +1510,7 @@ input {
 }
 
 .welcome-kiosk-frame {
-  width: min(100%, 360px);
+  width: min(100%, 620px);
   min-height: 740px;
   border-radius: 14px;
   overflow: hidden;

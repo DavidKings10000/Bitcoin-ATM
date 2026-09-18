@@ -8,20 +8,21 @@ function Amount() {
 
   const amount = Number(transaction.amount || 0);
   const btcRate = 64200;
-  const networkFee = 2.5;
+  const networkFee = 250;
   const transactionFeeRate = 0.01;
   const feeAmount = amount * transactionFeeRate + networkFee;
   const btcEstimate = amount > feeAmount ? (amount - feeAmount) / btcRate : 0;
+  const minimumCash = 500;
 
   const continueFlow = () => {
-    if (amount < 20) {
+    if (amount < minimumCash) {
       return;
     }
 
     addTransactionLog({
       type: "AMOUNT",
       message: "Cash amount entered by customer.",
-      details: `$${amount.toFixed(2)} USD`,
+      details: `KES ${amount.toFixed(2)}`,
     });
     updateTransaction({ status: "AWAITING_CONFIRMATION" });
     navigate("/confirmation");
@@ -43,7 +44,7 @@ function Amount() {
           </div>
 
           <h1>Insert Cash</h1>
-          <p>Please insert bills into the slot below. Accepted denominations: $5, $10, $20, $50, $100.</p>
+          <p>Please insert bills into the slot below. Accepted denominations: KES 500, KES 1,000.</p>
 
           <section className="cash-slot-card">
             <span className="cash-slot-icon">💵</span>
@@ -65,7 +66,7 @@ function Amount() {
 
             <div className="cash-row">
               <span>Current Rate</span>
-              <strong>1 BTC = ${btcRate.toLocaleString()}</strong>
+              <strong>1 BTC = KES {btcRate.toLocaleString()}</strong>
             </div>
             <div className="cash-row">
               <span>Transaction Fee</span>
@@ -73,7 +74,7 @@ function Amount() {
             </div>
             <div className="cash-row">
               <span>Network Fee</span>
-              <strong>${networkFee.toFixed(2)}</strong>
+              <strong>KES {networkFee.toFixed(2)}</strong>
             </div>
             <div className="cash-btc">
               <span>BTC to receive</span>
@@ -81,10 +82,10 @@ function Amount() {
             </div>
           </section>
 
-          <button type="button" className="kiosk-primary-button" onClick={continueFlow} disabled={amount < 20}>
+          <button type="button" className="kiosk-primary-button" onClick={continueFlow} disabled={amount < minimumCash}>
             Finish &amp; Send
           </button>
-          <small className="cash-note">Insert at least $20 to continue</small>
+          <small className="cash-note">Insert at least KES {minimumCash.toLocaleString()} to continue</small>
         </main>
 
         <footer className="kiosk-footer">

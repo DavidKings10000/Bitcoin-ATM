@@ -23,6 +23,14 @@ function AdminDashboard() {
     navigate("/");
   };
 
+  const openHAL = () => {
+    addTransactionLog({
+      type: "ADMIN",
+      message: "Operator opened the ATM HAL dashboard.",
+    });
+    navigate("/hal");
+  };
+
   const hardwareState = transaction.hardwareStatus === "CONNECTED" ? "Operational" : transaction.hardwareStatus;
 
   return (
@@ -121,6 +129,7 @@ function AdminDashboard() {
 
         <div className="admin-actions">
           <button type="button" onClick={openMaintenance}>MAINTENANCE</button>
+          <button type="button" onClick={openHAL}>HAL DASHBOARD</button>
           <button type="button" className="secondary-button" onClick={handleReset}>RESET SESSION</button>
         </div>
       </div>
