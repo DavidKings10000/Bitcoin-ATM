@@ -80,6 +80,10 @@ function HALDashboard() {
           lastError: lifecycle.lastError || hardware.error || null,
           device: lifecycle.device || hardware.device || "NV200",
           protocol: lifecycle.protocol || hardware.protocol || "SSP / eSSP",
+          transport: lifecycle.transport || hardware.transport || "sidecar",
+          components: lifecycle.components || hardware.components || [],
+          payoutCapacity: lifecycle.payoutCapacity || hardware.payoutCapacity || 0,
+          payoutDenominations: lifecycle.payoutDenominations || hardware.payoutDenominations || [],
         });
         appendLog("[recycler]", `Recycler status synced from Layer 2: ${lifecycleState}`);
       } catch (error) {
@@ -116,6 +120,10 @@ function HALDashboard() {
         port: lifecycle.port || status.port || "AUTO",
         device: lifecycle.device || status.device || "NV200",
         protocol: lifecycle.protocol || status.protocol || "SSP / eSSP",
+        transport: lifecycle.transport || status.transport || "sidecar",
+        components: lifecycle.components || status.components || [],
+        payoutCapacity: lifecycle.payoutCapacity || status.payoutCapacity || 0,
+        payoutDenominations: lifecycle.payoutDenominations || status.payoutDenominations || [],
         balance: Number(status.cashInserted || 0),
       });
       appendLog("[recycler]", `Hardware status update: ${connectionState}`);
@@ -447,7 +455,10 @@ function HALDashboard() {
                     <li><span>Currency</span><strong>{device.currency}</strong></li>
                     <li><span>Balance</span><strong>{device.balance}</strong></li>
                     <li><span>Session deposits</span><strong>{device.sessionDeposits || 0}</strong></li>
+                    <li><span>Transport</span><strong>{device.transport || "sidecar"}</strong></li>
+                    <li><span>Payout capacity</span><strong>{device.payoutCapacity || 0} notes</strong></li>
                   </ul>
+                  {device.components?.length ? <p className="device-detail-line">{device.components.join(" / ")}</p> : null}
                   <div className="device-actions compact-actions">
                     <button type="button" onClick={() => handleRecyclerAction("balance")}>Balance</button>
                     <button type="button" onClick={() => handleRecyclerAction("scan")}>Status</button>

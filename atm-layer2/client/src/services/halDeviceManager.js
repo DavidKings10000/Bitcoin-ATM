@@ -33,7 +33,15 @@ export const buildInitialDevices = () => ({
     currency: "KES",
     balance: 2450,
     sessionDeposits: 0,
-    details: { protocol: "SSP / eSSP", countryCode: "KE", realValueMultiplier: 1 },
+    details: {
+      protocol: "ITL SSP / eSSP sidecar",
+      transport: "sidecar",
+      components: ["NV200 validator", "cashbox", "SMART Payout"],
+      countryCode: "KE",
+      realValueMultiplier: 1,
+      payoutCapacity: 70,
+      payoutDenominations: [500, 1000],
+    },
   }),
   printer: createDevice({
     id: "printer",
