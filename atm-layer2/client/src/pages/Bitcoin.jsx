@@ -15,6 +15,20 @@ const isValidBitcoinAddress = (value) => {
   return Boolean(trimmed) && BTC_ADDRESS_PATTERNS.some((pattern) => pattern.test(trimmed));
 };
 
+const normalizeScannerPayload = (payload) => {
+  let decodedPayload = String(payload || "").trim();
+  try {
+    decodedPayload = decodeURIComponent(decodedPayload);
+  } catch {
+    // Keep the original scanner payload when it contains malformed URI escapes.
+  }
+  const bitcoinUriMatch = decodedPayload.match(/^bitcoin:([^?\s]+)/i);
+  const addressCandidate = bitcoinUriMatch ? bitcoinUriMatch[1] : decodedPayload;
+  const embeddedAddress = addressCandidate.match(/(?:bc1[0-9A-Za-z]{11,71}|[13][1-9A-HJ-NP-Za-km-z]{25,34})/i);
+
+  return (embeddedAddress ? embeddedAddress[0] : addressCandidate).trim();
+};
+
 function Bitcoin() {
   const navigate = useNavigate();
   const { transaction, updateTransaction, addTransactionLog } = useTransaction();
@@ -56,7 +70,7 @@ function Bitcoin() {
   };
 
   const handleScanResult = (walletAddress) => {
-    const cleanAddress = walletAddress.trim();
+    const cleanAddress = normalizeScannerPayload(walletAddress);
     if (!cleanAddress || !isValidBitcoinAddress(cleanAddress)) {
       setWalletError("The scanned code did not contain a valid Bitcoin wallet address.");
       return;
